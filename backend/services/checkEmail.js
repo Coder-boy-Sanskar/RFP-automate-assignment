@@ -42,7 +42,7 @@ const getSenderFromBody = (text, ownEmails = []) => {
 const imapConfig = {
   imap: {
     user: "sanskar.wrk",
-    password: "pppf poyd cmxx kgzi",
+    password: process.env.GMAIL_APP_PASSWORD,
     host: "imap.gmail.com",
     port: 993,
     tls: true,
@@ -54,7 +54,6 @@ const imapConfig = {
     },
   },
 };
-console.log(process.env.GMAIL_USER);
 
 /**
  * Check unread replies

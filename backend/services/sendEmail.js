@@ -7,11 +7,10 @@ import Email from "../modals/Email.js";
 const transporter = nodemailer.createTransport({
   service: "gmail",
   auth: {
-    user: "sanskar.wrk@gmail.com",
-    pass: "pppf poyd cmxx kgzi",
+    user: process.env.GMAIL_USER,
+    pass: process.env.GMAIL_APP_PASSWORD,
   },
 });
-console.log(process.env.GMAIL_USER, process.env.GMAIL_APP_PASSWORD);
 
 /**
  * Send email to multiple users
