@@ -23,7 +23,7 @@ function App() {
              onClick={() => setCurrentView('dashboard')} 
              className={`px-3 py-1 rounded text-sm font-medium transition ${currentView === 'dashboard' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}
            >
-             2. Compare
+             2. RFP Details
            </button>
         </div>
       )}

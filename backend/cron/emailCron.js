@@ -3,7 +3,7 @@ import { checkEmails } from "../services/checkEmail.js";
 
 console.log("📅 Email cron job initialized");
 
-cron.schedule("*/1 * * * *", async () => {
+cron.schedule("*/20 * * * * *", async () => {
   console.log("🔍 Checking email replies...");
   await checkEmails();
 });

@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import { useRfp } from '../../context/RfpContext';
 import Button from '../common/Button';
+import { useEffect } from 'react';
 
 const RfpInput = () => {
   const [input, setInput] = useState("");
-  const { processRfpQuery, loading } = useRfp();
+  const { processRfpQuery, loading ,rfpQuery,setStructuredRfp} = useRfp();
+  useEffect(()=>{setInput(rfpQuery)},[rfpQuery])
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -21,7 +23,7 @@ const RfpInput = () => {
           className="flex-1 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
           placeholder="e.g., I need 20 Dell Laptops with 16GB RAM, budget is 50k..."
           value={input}
-          onChange={(e) => setInput(e.target.value)}
+          onChange={(e) => {setInput(e.target.value);setStructuredRfp("");}}
           disabled={loading}
         />
         <Button 
@@ -29,7 +31,7 @@ const RfpInput = () => {
           isLoading={loading}
           variant="primary"
         >
-          {loading ? "Analyzing..." : "Generate RFP"}
+          {loading ? "Analyzing..." : "Get vendors"}
         </Button>
       </form>
     </div>

@@ -41,7 +41,7 @@ const LandingPage = ({ onStart }) => {
               id="username"
               type="text"
               className="w-full p-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition"
-              placeholder="e.g. John Doe"
+              placeholder="e.g. Sanskar"
               value={nameInput}
               onChange={(e) => setNameInput(e.target.value)}
               autoFocus

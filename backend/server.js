@@ -10,6 +10,15 @@ dotenv.config();
 
 await connectDB();
 
+app.use(
+  cors({
+    origin: "http://localhost:5173", // frontend URL
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+    credentials: true,
+  }),
+);
+
 app.use(express.json());
 // app.use(express.urlencoded({ extended: true }));
 

@@ -2,6 +2,7 @@
 
 import React, { createContext, useContext, useState } from 'react';
 import { notify } from '../utils/toast';
+import api from '../api/axios';
 
 // Create Context
 const RfpContext = createContext();
@@ -59,28 +60,58 @@ export const RfpProvider = ({ children }) => {
   const [structuredRfp, setStructuredRfp] = useState(null);
   const [vendors, setVendors] = useState([]);
   const [selectedVendorIds, setSelectedVendorIds] = useState([]);
+    const [rfps, setRfps] = useState([]);
+
   
   // NEW: State for Proposals
   const [proposals, setProposals] = useState([]); 
 
   // Function 1: Simulate AI Processing
   const processRfpQuery = async (query) => {
+  try {
+    if (!query?.trim()) {
+      notify.error("Please enter an RFP query");
+      return;
+    }
+
     setLoading(true);
     setRfpQuery(query);
-    setTimeout(() => {
-      const mockAiResponse = {
-        title: "Procurement: " + query.substring(0, 20) + "...",
-        items: [{ name: "Laptop", quantity: 20, specs: "16GB RAM" }],
-        budget: "$50,000",
-        deliveryDate: "2026-03-01"
-      };
-      setStructuredRfp(mockAiResponse);
-      setVendors(MOCK_VENDORS);
-      setLoading(false);
-      notify.success("RFP Structure Generated!");
-    }, 1500);
-  };
 
+    const response = await api.post("/get-vendors", { query });
+
+    const { vendors, message } = response.data;
+    if(vendors.length===0){
+      notify.info(`No vendor found , Sorry for inconvenience`);
+       setStructuredRfp({
+  id: 124,
+  name: "Not found",
+  email: "",
+  categories: ["not found"],
+  contactPerson: "Null",
+})
+      
+    }
+    
+    const sanitizedVendors = vendors.map((vendor) => ({
+  id: vendor._id,
+  name: vendor.name,
+  email: vendor.email,
+  categories: vendor.categories,
+  contactPerson: vendor.contactPerson,
+}));
+
+    setStructuredRfp(sanitizedVendors);
+
+    notify.success(message || "RFP generated successfully");
+  } catch (error) {
+    console.error("RFP API Error:", error);
+    notify.error(
+      error.response?.data?.message || "Failed to process RFP"
+    );
+  } finally {
+    setLoading(false);
+  }
+};
   // Function 2: Vendor Selection Helpers
   const toggleVendorSelection = (id) => {
     if (selectedVendorIds.includes(id)) {
@@ -111,31 +142,48 @@ export const RfpProvider = ({ children }) => {
     }, 2000);
   };
 
-  // Function 4: Fetch Proposals (NEW)
-  const fetchProposals = () => {
-    setLoading(true);
-    // Simulate network request to fetch parsed emails
-    setTimeout(() => {
-      setProposals(MOCK_PROPOSALS);
+   const fetchRfps = async () => {
+    try {
+
+      setLoading(true);
+
+      const res = await api.post("/get-rfps"); // <-- your endpoint
+
+      if (res.data.success) {
+        const cleanedRfps = res.data.data.map((rfp) => ({
+          id: rfp._id,
+          title: rfp.title,
+          rfpType: rfp.rfpType,
+          createdAt: rfp.createdAt,
+        }));
+
+        setRfps(cleanedRfps);
+      }
+    } catch (err) {
+      notify.error("Failed to load RFPs");
+    } finally {
       setLoading(false);
-      notify.success("3 Proposals received and analyzed by AI!");
-    }, 1500);
+    }
   };
 
+  
   return (
     <RfpContext.Provider value={{
-      username, setUsername,
+      username, setUsername,fetchRfps,
+      rfps,
       loading,
       rfpQuery,
+      setRfpQuery,
+      setStructuredRfp,
       structuredRfp,
       vendors,
       selectedVendorIds,
-      proposals,        // <--- Exported
+           // <--- Exported
       processRfpQuery,
       toggleVendorSelection,
       toggleSelectAll,
-      sendRfpEmails,
-      fetchProposals    // <--- Exported
+      sendRfpEmails
+          // <--- Exported
     }}>
       {children}
     </RfpContext.Provider>
